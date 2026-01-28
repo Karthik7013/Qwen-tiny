@@ -6,9 +6,10 @@ import os
 app = FastAPI()
 
 # Download a tiny 4-bit quantized model (approx 350MB)
+# The original Qwen repo uses dots (qwen2.5) and underscores differently
 MODEL_PATH = hf_hub_download(
     repo_id="Qwen/Qwen2.5-0.5B-Instruct-GGUF",
-    filename="qwen2-0_5b-instruct-q4_k_m.gguf"
+    filename="qwen2.5-0.5b-instruct-q4_k_m.gguf"  # Note the 2.5 and the dots
 )
 
 # Load model into RAM (limited context to save memory)
