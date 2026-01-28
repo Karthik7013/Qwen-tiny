@@ -1,26 +1,23 @@
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse # Add this
 from llama_cpp import Llama
 from huggingface_hub import hf_hub_download
 
 app = FastAPI()
 
-# SmolLM2-135M is significantly smaller and will fit easily in 512MB RAM
+# SmolLM2-135M: The safest choice for Render's 512MB RAM
 MODEL_PATH = hf_hub_download(
     repo_id="bartowski/SmolLM2-135M-Instruct-GGUF",
     filename="SmolLM2-135M-Instruct-Q4_K_M.gguf"
 )
 
-# Load with extreme memory efficiency
-llm = Llama(
-    model_path=MODEL_PATH, 
-    n_ctx=512,       # Standard context size
-    n_threads=1,     # 1 thread prevents CPU-related memory spikes
-    use_mmap=False   # Essential for low-memory environments
-)
+llm = Llama(model_path=MODEL_PATH, n_ctx=512, n_threads=1, use_mmap=False)
 
-@app.get("/")
+# NEW: This serves the chat interface when you visit your URL
+@app.get("/", response_class=HTMLResponse)
 def home():
-    return {"status": "SmolLM is active and stable!"}
+    with open("index.html", "r") as f:
+        return f.read()
 
 @app.get("/ask")
 def ask(prompt: str):
